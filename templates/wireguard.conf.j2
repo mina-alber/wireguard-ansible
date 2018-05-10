@@ -1,0 +1,6 @@
+[Interface]
+Address = {{ wireguard_interface_ip }}
+PostUp = firewall-cmd --add-masquerade --permanent ; firewall-cmd --reload
+PostDown = firewall-cmd --remove-masquerade --permanent ; firewall-cmd --reload
+ListenPort = {{ wireguard_port }}
+PrivateKey = {{ wg_privatekey['content'] | b64decode }}

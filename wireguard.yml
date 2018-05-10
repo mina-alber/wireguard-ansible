@@ -1,0 +1,160 @@
+########################################
+## WireGuard installation on CentOS 7 ##
+########################################
+#
+#
+
+--- 
+- hosts: all
+  gather_facts: no
+  become: yes
+  become_user: root
+
+  tasks:
+
+    - name: Source main variables values
+      include_vars: vars.yml
+
+## Install WireGuard prerequests 
+
+    - name: Upgrade system packages
+      yum: 
+        name: "*"
+        state: latest
+        update_cache: yes
+
+
+    - name : Add Extra Packages for Enterprise Linux (EPEL) repository
+      yum:
+        name: epel-release
+        state: latest
+
+
+    - name : Install kernel headers
+      yum:
+        name: kernel-devel
+        state: latest
+
+## Add WireGuard repository and install it
+
+    - name: Add WireGuard repository
+      get_url:
+        url: "{{ wireguard_repo }}"
+        dest: /etc/yum.repos.d/wireguard.repo
+
+
+    - name: Install WireGuard
+      yum:
+        name: "{{ item }}"
+        state: latest
+        update_cache: yes
+      with_items:
+        - wireguard-dkms 
+        - wireguard-tools
+
+## Configure system environment
+
+    - name: Enable packet forwording for IPv4
+      lineinfile:
+        dest: /etc/sysctl.conf
+        line: "net.ipv4.ip_forward = 1"
+        state: present
+
+
+    - name: Install FirewallD
+      yum:
+        name: firewalld
+        state: latest
+        update_cache: yes
+
+
+    - name: Enable and start FirewallD service
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+
+## Configure WireGuard
+
+    - name: Generate WireGuard private and public keys
+      shell: wg genkey | tee /root/wg_privatekey | wg pubkey > /root/wg_publickey
+
+
+    - name: Register WireGuard private key as a variable
+      slurp:
+        src: /root/wg_privatekey
+      register: wg_privatekey
+
+    
+    - name: Create WireGuard configurations directory
+      file:
+        dest: /etc/wireguard
+        state: directory
+
+
+    - name: Generate WireGuard configuration file
+      template:
+        src: wireguard.conf.j2
+        dest: /etc/wireguard/wg0.conf
+        owner: root
+        group: root
+        mode: 0600
+        force: no
+
+## Configure FirewallD
+
+    - name: Add WireGuard as a service to FirewallD
+      template:
+        src: wireguard.xml.j2
+        dest: /etc/firewalld/services/wireguard.xml
+        owner: root
+        group: root
+        mode: 0600
+        force: no
+
+
+    - name: Restart FirewallD service
+      service: 
+        name: firewalld
+        state: restarted
+
+
+    - name: Allow WireGuard service for FirewallD public zone
+      firewalld:
+        zone: public
+        service: wireguard
+        state: enabled
+        permanent: yes
+        immediate: yes
+
+
+    - name: Add WireGuard interface to FirewallD public zone
+      firewalld:
+        zone: public
+        interface: wg0
+        state: enabled
+        permanent: yes
+        immediate: yes
+
+## Reboot server, enable and start WireGuard service
+
+    - name: Reboot server
+      shell: sleep 2 && /sbin/reboot
+      async: 1
+      poll: 0
+      ignore_errors: true
+
+
+    - name: Waiting for hosts to come back
+      wait_for_connection:
+
+
+    - name: Enable WireGuard kernel module
+      shell: sleep 10 && /usr/sbin/modprobe wireguard
+
+
+    - name: Start and enable WireGuard service
+      service:
+        name: wg-quick@wg0
+        state: started
+        enabled: yes
