@@ -1,7 +1,8 @@
 # WireGuard Ansible
 ![AUR](https://img.shields.io/aur/license/yaourt.svg)
 
-![WireGuard Logo](https://raw.githubusercontent.com/mina-alber/wireguard-ansible/master/wireguard_logo.svg)
+![Alt text](./wireguard_logo.svg)
+<img src="./wireguard_logo.svg">
 
 This Ansible playbook installs and configures the WireGuard server on `CentOS 7`. Everything is configurable all you need to do is to modify the `vars` file & the `hosts` file and you're ready to go.
 
