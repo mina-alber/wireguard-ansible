@@ -1,9 +1,0 @@
-###########################
-## WireGuard Server Vars ##
-###########################
-
-wireguard_repo: "https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-7/jdoss-wireguard-epel-7.repo"
-
-wireguard_interface_ip: "10.0.0.1/24" # IPADDR/PREFIX
-wireguard_port: "51820"
-
