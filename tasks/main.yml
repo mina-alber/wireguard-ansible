@@ -5,9 +5,6 @@
 #
 
 --- 
-#    - name: Source main variables values
-#      include_vars: main.yml
-
 ## Install WireGuard prerequests 
 
     - name: Upgrade system packages
