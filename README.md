@@ -1,5 +1,5 @@
 # WireGuard Ansible
-![AUR](https://img.shields.io/aur/license/yaourt.svg) ![Galaxy](https://img.shields.io/badge/galaxy-mina--alber.wireguard--ansible-blue.svg)
+![AUR](https://img.shields.io/aur/license/yaourt.svg) [![Galaxy](https://img.shields.io/badge/galaxy-mina--alber.wireguard--ansible-blue.svg)](https://galaxy.ansible.com/mina-alber/wireguard-ansible)
 
 ![WireGuard Logo](https://github.com/mina-alber/wireguard-ansible/blob/master/wireguard_logo.png)
 
