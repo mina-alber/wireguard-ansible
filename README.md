@@ -1,16 +1,25 @@
 # WireGuard Ansible
-![AUR](https://img.shields.io/aur/license/yaourt.svg)
+![AUR](https://img.shields.io/aur/license/yaourt.svg) ![Galaxy](https://img.shields.io/badge/galaxy-mina--alber.wireguard--ansible-blue.svg)
 
-![WireGuard Logo](./wireguard_logo.svg)
+![WireGuard Logo](https://raw.githubusercontent.com/mina-alber/wireguard-ansible/master/wireguard_logo.png)
 
 This Ansible playbook installs and configures the WireGuard server on `CentOS 7`. Everything is configurable all you need to do is to modify the `vars` file & the `hosts` file and you're ready to go.
 
 ## Requirements
 This playbook tested on Ansible 2.5
+
 ## Installation
+
+### Install from Ansible Galaxy
+```sh
+ansible-galaxy install mina-alber.wireguard-ansible
+```
+
+### Run Ansible playbook
 ```sh
 ansible-playbook -i hosts_inventory wireguard.yml
 ```
+
 ## Role Variables
 To configure the script before using it please check `vars/main.yml`
 ```yml
