@@ -154,14 +154,6 @@
       retries: 10
       delay: 10
       failed_when: wireguard_module_status is failure
-      
-
-    - name: Wait 20 seconds for DKMS modules load
-      command: sleep 20
-
-
-    - name: Enable WireGuard kernel module
-      shell: /usr/sbin/modprobe wireguard
 
 
     - name: Start and enable WireGuard service
