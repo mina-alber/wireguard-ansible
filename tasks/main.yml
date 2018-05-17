@@ -149,11 +149,11 @@
       modprobe:
         name: wireguard
         state: present
-      register: wireguard_module_status
-      until:  wireguard_module_status|succeeded
+      register: wireguard_module_enabled
+      until:  wireguard_module_enabled is succeeded
       retries: 10
       delay: 10
-      failed_when: wireguard_module_status is failure
+      failed_when: wireguard_module_enabled is failure
 
 
     - name: Start and enable WireGuard service
