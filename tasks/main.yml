@@ -45,10 +45,12 @@
 ## Configure system environment
 
     - name: Enable packet forwording for IPv4
-      lineinfile:
-        dest: /etc/sysctl.conf
-        line: "net.ipv4.ip_forward = 1"
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: 1
+        sysctl_set: yes
         state: present
+        reload: yes
 
 
     - name: Install FirewallD
@@ -65,21 +67,21 @@
         enabled: yes
 
 ## Configure WireGuard
-
-    - name: Generate WireGuard private and public keys
-      shell: wg genkey | tee /root/wg_privatekey | wg pubkey > /root/wg_publickey
-
-
-    - name: Register WireGuard private key as a variable
-      slurp:
-        src: /root/wg_privatekey
-      register: wg_privatekey
-
     
     - name: Create WireGuard configurations directory
       file:
         dest: /etc/wireguard
         state: directory
+
+
+    - name: Generate WireGuard private and public keys
+      shell: wg genkey | tee /etc/wireguard/privatekey | wg pubkey > /etc/wireguard/publickey | chmod 600 /etc/wireguard/privatekey
+
+
+    - name: Register WireGuard private key as a variable
+      slurp:
+        src: /etc/wireguard/privatekey
+      register: wg_privatekey
 
 
     - name: Generate WireGuard configuration file
@@ -114,7 +116,7 @@
     - name: Waiting for hosts to come back
       wait_for_connection:
 
-##  Allow WireGuard service and add network interface on firewall
+##  Allow WireGuard service, add network interface on firewall and enable masquerading
 
     - name: Allow WireGuard service for FirewallD public zone
       firewalld:
@@ -132,7 +134,27 @@
         state: enabled
         permanent: yes
 
+
+    - name: Enable Masquerading
+      firewalld:
+        zone: public
+        masquerade: yes
+        state: enabled
+        permanent: yes
+        
+
 ## Enable WireGuard kernel module and start service
+
+    - name: Enable WireGuard kernel module
+      modprobe:
+        name: wireguard
+        state: present
+      register: wireguard_module_status
+      until:  wireguard_module_status|succeeded
+      retries: 10
+      delay: 10
+      failed_when: wireguard_module_status is failure
+      
 
     - name: Wait 20 seconds for DKMS modules load
       command: sleep 20
