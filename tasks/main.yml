@@ -75,7 +75,7 @@
 
 
     - name: Generate WireGuard private and public keys
-      shell: wg genkey | tee /etc/wireguard/privatekey | wg pubkey > /etc/wireguard/publickey | chmod 600 /etc/wireguard/privatekey
+      shell: umask 077 && wg genkey | tee /etc/wireguard/privatekey | wg pubkey > /etc/wireguard/publickey
 
 
     - name: Register WireGuard private key as a variable
