@@ -1,7 +1,7 @@
 # WireGuard Ansible
 ![AUR](https://img.shields.io/aur/license/yaourt.svg) [![Galaxy](https://img.shields.io/badge/galaxy-mina--alber.wireguard--ansible-blue.svg)](https://galaxy.ansible.com/mina-alber/wireguard-ansible)
 
-This Ansible playbook installs and configures the WireGuard server on `CentOS 7`. Everything is configurable all you need to do is to modify the `vars` file & the `hosts` file and you're ready to go.
+This Ansible playbook installs and configures the WireGuard server on `CentOS 7`, `Debian 8`, `Ubuntu 16.04` and newer releases. Everything is configurable all you need to do is to modify the `vars` file & the `hosts` file and you're ready to go.
 
 ## Requirements
 This playbook tested on Ansible 2.5
@@ -27,7 +27,7 @@ wireguard_port: "51820"
 ```
 
 ## TODOs
-* [ ] Support Ubuntu
+* [X] Support Ubuntu
 * [ ] Grant and revoking users keys
 * [ ] Test the playbook on Ansible old versions
 
