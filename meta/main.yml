@@ -7,6 +7,15 @@ galaxy_info:
    - name: EL
      versions:
       - 7
+   - name: Debian
+     versions:
+      - jessie
+      - stretch
+   - name: Ubuntu
+     versions:
+      - xenial
+      - bionic
   galaxy_tags: 
    - vpn
    - networking
+   - wireguard

@@ -1,43 +1,83 @@
-########################################
-## WireGuard installation on CentOS 7 ##
-########################################
+############################
+## WireGuard installation ##
+############################
 #
 #
 
 --- 
-## Install WireGuard prerequests 
+## Install WireGuard prerequests for CentOS/RHEL 7
 
-    - name: Upgrade system packages
+    - name: Upgrade system packages on CentOS/RHEL
       yum: 
         name: "*"
         state: latest
         update_cache: yes
+      when: ansible_os_family == 'RedHat'
 
 
     - name : Add Extra Packages for Enterprise Linux (EPEL) repository
       yum:
         name: epel-release
         state: latest
+      when: ansible_os_family == 'RedHat'
 
 
-    - name : Install kernel headers
+    - name : Install kernel headers on CentOS/RHEL
       yum:
         name: kernel-devel
         state: latest
+      when: ansible_os_family == 'RedHat'
+
+## Install WireGuard prerequests for Debian/Ubuntu
+
+    - name: Install Python 2 if not exist
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+      when: ansible_os_family == 'Debian'
+ 
+
+    - name: Upgrade system packages on Debian/Ubuntu
+      apt:
+        upgrade: dist
+        update_cache: yes
+      when: ansible_os_family == 'Debian'
 
 ## Add WireGuard repository and install it
 
-    - name: Add WireGuard repository
+    - name: Add WireGuard repository to CentOS/RHEL 7
       get_url:
         url: "{{ wireguard_repo }}"
         dest: /etc/yum.repos.d/wireguard.repo
+      when: ansible_os_family == 'RedHat'
+
+
+    - name : Add WireGuard repository to Debian
+      apt_repository:
+        repo: deb http://deb.debian.org/debian/ unstable main
+        state: present
+        filename: unstable-wireguard.list
+        update_cache: yes
+      when: ansible_distribution == 'Debian'
+
+
+    - name: Configure APT to use unstable Debian repository with low priority
+      copy:
+        src: limit-unstable
+        dest: /etc/apt/preferences.d/limit-unstable
+      when: ansible_distribution == 'Debian'
+
+
+    - name : Add WireGuard repository to Ubuntu
+      apt_repository:
+        repo: ppa:wireguard/wireguard
+        state: present
+        update_cache: yes
+      when: ansible_distribution == 'Ubuntu'
 
 
     - name: Install WireGuard
-      yum:
+      package:
         name: "{{ item }}"
         state: latest
-        update_cache: yes
       with_items:
         - wireguard-dkms 
         - wireguard-tools
@@ -54,10 +94,9 @@
 
 
     - name: Install FirewallD
-      yum:
+      package:
         name: firewalld
         state: latest
-        update_cache: yes
 
 
     - name: Enable and start FirewallD service
@@ -115,6 +154,12 @@
 
     - name: Waiting for hosts to come back
       wait_for_connection:
+
+## Install current kernel headers on Debian/Ubuntu
+
+    - name: Install kernel headers on Debian/Ubuntu
+      shell: apt install -y linux-headers-`uname -r`
+      when: ansible_os_family == 'Debian'
 
 ##  Allow WireGuard service, add network interface on firewall and enable masquerading
 
