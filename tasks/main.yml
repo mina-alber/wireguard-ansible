@@ -93,17 +93,7 @@
         reload: yes
 
 
-    - name: Install FirewallD
-      package:
-        name: firewalld
-        state: latest
 
-
-    - name: Enable and start FirewallD service
-      service:
-        name: firewalld
-        state: started
-        enabled: yes
 
 ## Configure WireGuard
     
@@ -132,17 +122,12 @@
         mode: 0600
         force: no
 
-## Add WireGuard service to FirewallD services
+## Set up the firewall if we're gonna
+    - name: Set up the firewall
+      import_tasks: firewall-setup.yml
+      when: manage_firewall
 
-    - name: Add WireGuard as a service to FirewallD
-      template:
-        src: wireguard.xml.j2
-        dest: /etc/firewalld/services/wireguard.xml
-        owner: root
-        group: root
-        mode: 0600
-        force: no
-
+      
 ## Reboot server to load latest kernel
 
     - name: Reboot server
@@ -161,34 +146,10 @@
       shell: apt install -y linux-headers-`uname -r`
       when: ansible_os_family == 'Debian'
 
-##  Allow WireGuard service, add network interface on firewall and enable masquerading
-
-    - name: Allow WireGuard service for FirewallD public zone
-      firewalld:
-        zone: public
-        service: wireguard
-        state: enabled
-        permanent: yes
-        immediate: yes
-
-
-    - name: Add WireGuard interface to FirewallD public zone
-      firewalld:
-        zone: public
-        interface: wg0
-        state: enabled
-        permanent: yes
-        immediate: yes
-
-
-    - name: Enable Masquerading
-      firewalld:
-        zone: public
-        masquerade: yes
-        state: enabled
-        permanent: yes
-        immediate: yes
-        
+## Enable the firewall if it isn't already
+    - name: Enable the firewall
+      import_tasks: firewall-enable.yml
+      when: manage_firewall
 
 ## Enable WireGuard kernel module and start service
 
