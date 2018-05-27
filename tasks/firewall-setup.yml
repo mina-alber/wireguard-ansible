@@ -1,0 +1,47 @@
+###########################
+## Firewall setup
+##########################
+
+## Firewalld rules first
+
+- name: Install FirewallD
+  package:
+    name: firewalld
+    state: latest
+  when: use_firewalld
+
+
+- name: Enable and start FirewallD service
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+  when: use_firewalld
+
+
+## Add WireGuard service to FirewallD services
+
+- name: Add WireGuard as a service to FirewallD
+  template:
+    src: wireguard.xml.j2
+    dest: /etc/firewalld/services/wireguard.xml
+    owner: root
+    group: root
+    mode: 0600
+    force: no
+  when: use_firewalld
+
+
+## UFW rules second
+- name: Ensure UFW is installed
+  package:
+    name: ufw
+    state: present
+  when: use_ufw
+  
+- name: Setup ufw
+  ufw:
+    rule: allow
+    proto: udp
+    port: "{{wireguard_port}}"
+  when: use_ufw

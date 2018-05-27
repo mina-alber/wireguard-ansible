@@ -1,0 +1,32 @@
+###########################
+## Firewall management
+##########################
+
+##  firewalld - Allow WireGuard service, add network interface on firewall and enable masquerading
+
+  - name: Allow WireGuard service for FirewallD public zone
+    firewalld:
+      zone: public
+      service: wireguard
+      state: enabled
+      permanent: yes
+      immediate: yes
+    when: use_firewalld
+
+  - name: Add WireGuard interface to FirewallD public zone
+    firewalld:
+      zone: public
+      interface: wg0
+      state: enabled
+      permanent: yes
+      immediate: yes
+    when: use_firewalld
+    
+  - name: Enable Masquerading
+    firewalld:
+      zone: public
+      masquerade: yes
+      state: enabled
+      permanent: yes
+      immediate: yes
+    when: use_firewalld  
