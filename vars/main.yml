@@ -10,4 +10,4 @@ wireguard_port: "51820"
 ## Firewall settings
 manage_firewall: true
 use_firewalld: ansible_os_family == 'RedHat'
-use_ufw: not use_firewalld
+use_ufw: ansible_os_family == 'Debian'

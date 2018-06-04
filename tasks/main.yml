@@ -128,13 +128,14 @@
         owner: root
         group: root
         mode: 0600
-        force: no
+        force: yes
 
 ## Set up the firewall if we're gonna
     - name: Set up the firewall
       import_tasks: firewall-setup.yml
       when: manage_firewall
-
+      tags:
+        - firewall
       
 ## Reboot server to load latest kernel
 
@@ -158,7 +159,9 @@
     - name: Enable the firewall
       import_tasks: firewall-enable.yml
       when: manage_firewall
-
+      tags:
+        - firewall
+      
 ## Enable WireGuard kernel module and start service
 
     - name: Enable WireGuard kernel module
