@@ -4,7 +4,7 @@
 
 wireguard_repo: "https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-7/jdoss-wireguard-epel-7.repo"
 
-wireguard_interface_ip: "10.0.0.1/24" # IPADDR/PREFIX
+#wireguard_interface_ip: "10.0.0.1/24" # IPADDR/PREFIX should be set in the host_vars file for each host
 wireguard_port: "51820"
 
 ## Firewall settings

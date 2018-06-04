@@ -112,6 +112,14 @@
         src: /etc/wireguard/privatekey
       register: wg_privatekey
 
+    - name: Register WireGuard public key as a variable
+      slurp:
+        src: /etc/wireguard/publickey
+      register: wg_publickey
+
+    - name: Store the public key in the host so it can be used in the template when setting Peers
+      set_fact:
+        wg_PublicKey: "{{ wg_publickey['content'] | b64decode | truncate(44,true,'')  }}"
 
     - name: Generate WireGuard configuration file
       template:

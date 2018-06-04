@@ -2,3 +2,13 @@
 Address = {{ wireguard_interface_ip }}
 ListenPort = {{ wireguard_port }}
 PrivateKey = {{ wg_privatekey['content'] | b64decode }}
+
+{% for nodename in ansible_play_hosts %}
+{% if ansible_nodename != nodename %}
+[Peer]
+PublicKey = {{hostvars[nodename]['wg_PublicKey']}} 
+AllowedIPs = {{hostvars[nodename]['wireguard_interface_ip']}}/32
+Endpoint = {{hostvars[nodename]['ansible_default_ipv4']['address']}}:{{wireguard_port}}
+{% endif %}
+
+{% endfor %}
