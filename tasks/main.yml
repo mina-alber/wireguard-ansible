@@ -111,10 +111,17 @@
       file:
         dest: /etc/wireguard
         state: directory
+        
+        
+    - name: Test for existing keys
+      stat:
+        path: /etc/wireguard/privatekey
+      register: key_check
 
 
     - name: Generate WireGuard private and public keys
       shell: umask 077 && wg genkey | tee /etc/wireguard/privatekey | wg pubkey > /etc/wireguard/publickey
+      when: key_check.stat.exists == False
 
 
     - name: Register WireGuard private key as a variable
